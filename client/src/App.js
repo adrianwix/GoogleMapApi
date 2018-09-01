@@ -23,10 +23,11 @@ class App extends Component {
         clients: [],
         googleMap: {}
     };
-    this.map = {};
+    this.map = null;
     this.directionsDisplay = {};
     this.directionsService = {};
 
+    
     this.selectAgent = this.selectAgent.bind(this);
     this.selectClients = this.selectClients.bind(this);
     this.initMap = this.initMap.bind(this);
@@ -43,11 +44,11 @@ class App extends Component {
   }
 
   componentDidMount () {
-    if(!this.state.googleMap) {
+    if(!this.map) {
       loadGoogleMapsAPI( API_CONFIG ).then(googleMaps => {
 
         console.log(googleMaps);
-        this.setState({googleMaps: googleMaps})
+        this.map= googleMaps;
 
       }).catch(err => console.log(err));
     }
@@ -94,14 +95,14 @@ class App extends Component {
     if (this.state.agent.name === "Select an Agent!") {
       return;
     }
-    let googleMaps = this.state.googleMap;
-    this.directionsDisplay = new googleMaps.DirectionsRenderer;
-    this.directionsService = new googleMaps.DirectionsService;
+    let googleMaps = this.map;
+    this.directionsDisplay = new googleMaps.DirectionsRenderer();
+    this.directionsService = new googleMaps.DirectionsService();
 
     console.log(this.state.agent);
     // Here I can enter the lat, lng of the Agents. Example {lat: 41.85, lng: -87.65}
     let map = new googleMaps.Map(document.getElementById('map'), {
-        zoom: 7,
+        zoom: 5,
         center: {lat: this.state.agent.latitude, lng: this.state.agent.longitude}
     });
     this.directionsDisplay.setMap(map);
@@ -132,7 +133,7 @@ class App extends Component {
       waypoints: waypoints,
       travelMode: 'DRIVING'
     },
-    function(response, status) {
+    (response, status) => {
       if (status === 'OK') {
         this.directionsDisplay.setDirections(response);
       } else {
